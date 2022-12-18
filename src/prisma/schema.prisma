@@ -1,0 +1,31 @@
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id    Int     @id @default(autoincrement())
+    name  String  @db.VarChar(255)
+    email String  @unique(map: "ukEmail") @db.VarChar(255)
+    bio   String? @db.VarChar(255)
+    Post  Post[]
+}
+
+model Post {
+    id        Int       @id @default(autoincrement())
+    authorId  Int
+    title     String    @db.VarChar(255)
+    content   String?   @db.VarChar(255)
+    published Boolean   @default(false)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime?
+    User      User      @relation(fields: [authorId], references: [id], map: "fkPostUser")
+
+    @@index([authorId], map: "fkPostUser")
+}
+
+// * https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference
